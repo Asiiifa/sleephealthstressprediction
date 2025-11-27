@@ -108,9 +108,6 @@ sleephealthstressprediction/
 │
 └── requirements.txt # Libraries used
 
-markdown
-Copy code
-
 ### 📌 Why these folders?
 - **templates/** → Flask loads HTML only from this folder  
 - **static/** → All CSS, JS, images stored here  
