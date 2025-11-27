@@ -1,0 +1,23 @@
+import subprocess
+import webbrowser
+import time
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_PATH = os.path.join(BASE_DIR, "app.py")
+
+process = subprocess.Popen(
+    [sys.executable, APP_PATH],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
+
+# Wait a moment for server to start
+time.sleep(2)
+
+# Open browser automatically
+webbrowser.open("http://127.0.0.1:5000")
+
+# Keep app running
+process.wait()
