@@ -3,7 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleep Health Stress Prediction</title>
+
+    <title>Nidra AI - Sleep Health & Stress Prediction | AI-Powered Wellness Assistant</title>
+    <meta name="description" content="Nidra AI predicts your sleep quality and stress levels using AI. Get personalized health insights, sleep score analysis, and wellness recommendations powered by machine learning.">
+    <meta name="keywords" content="sleep health, stress prediction, AI wellness, sleep score, sleep tracker, stress level checker, health prediction AI, Nidra AI">
+    <meta name="author" content="Nidra AI">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nidra-ai-drgl.onrender.com/">
+
+    <meta property="og:title" content="Nidra AI - Sleep Health & Stress Prediction">
+    <meta property="og:description" content="AI-powered sleep and stress prediction tool. Get personalized health insights instantly.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nidra-ai-drgl.onrender.com/">
+    <meta property="og:image" content="https://nidra-ai-drgl.onrender.com/static/logo.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nidra AI - Sleep Health & Stress Prediction">
+    <meta name="twitter:description" content="AI-powered sleep and stress prediction tool. Get personalized health insights instantly.">
+    <meta name="twitter:image" content="https://nidra-ai-drgl.onrender.com/static/logo.png">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <meta name="theme-color" content="#0f172a">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,6 +32,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Nidra AI",
+        "description": "AI-powered sleep health and stress prediction web application.",
+        "url": "https://nidra-ai-drgl.onrender.com/",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
 </head>
 
 <body class="app-loading" data-user-name="{{ user_name or '' }}" data-user-email="{{ user_email or '' }}">

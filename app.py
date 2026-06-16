@@ -1,10 +1,10 @@
-import os
+﻿import os
 from pathlib import Path
 import threading
 import webbrowser
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, render_template, request, session, send_from_directory, Response
 import joblib
 import pandas as pd
 from supabase import create_client
@@ -90,6 +90,24 @@ def home():
 
 
 # ================= AUTH =================
+@app.route("/robots.txt")
+def robots():
+    return send_from_directory(app.static_folder, "robots.txt")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    pages = [
+        {"url": "https://nidra-ai-drgl.onrender.com/", "priority": "1.0"},
+    ]
+    xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    for page in pages:
+        xml_parts.append(f'<url><loc>{page["url"]}</loc><priority>{page["priority"]}</priority></url>')
+    xml_parts.append('</urlset>')
+    return Response(''.join(xml_parts), mimetype='application/xml')
+
+
 @app.route("/auth/session", methods=["POST"])
 def update_session():
     data = request.get_json(silent=True) or {}
@@ -284,4 +302,5 @@ if __name__ == "__main__":
         threading.Timer(1.2, lambda: webbrowser.open(f"http://127.0.0.1:{port}")).start()
 
     app.run(debug=debug, host="127.0.0.1", port=port)
+
 

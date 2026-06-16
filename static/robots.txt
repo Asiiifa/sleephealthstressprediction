@@ -1,0 +1,7 @@
+﻿User-agent: *
+Allow: /
+Disallow: /chat
+Disallow: /predict
+Disallow: /history
+
+Sitemap: https://nidra-ai-drgl.onrender.com/sitemap.xml
