@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Health Stress Prediction</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=3) }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="app-loading" data-user-name="{{ user_name or '' }}" data-user-email="{{ user_email or '' }}">
+    <div id="splashScreen" class="overlay-layer splash-screen">
+        <div class="splash-card">
+            <img src="{{ url_for('static', filename='logo.pngg') }}" alt="App logo" class="splash-logo">
+        </div>
+    </div>
+
+    <div id="skeletonLoader" class="overlay-layer skeleton-loader hidden-overlay" aria-hidden="true">
+        <div class="skeleton-shell">
+            <div class="skeleton-head shimmer"></div>
+            <div class="skeleton-grid">
+                <div class="skeleton-card shimmer"></div>
+                <div class="skeleton-card shimmer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-shell fade-in">
+        <aside class="sidebar">
+            <div class="sidebar-main sidebar-main-reference">
+                <div class="brand-block brand-block-reference">
+                    <div class="brand-logo-wrap brand-logo-wrap-reference">
+                        <img src="{{ url_for('static', filename='logo.pngg') }}" alt="App logo" class="brand-logo">
+                    </div>
+                    <div class="brand-text brand-text-reference">
+                        <h1>NIDRA <span>AI</span></h1>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav sidebar-nav-reference">
+                    <button id="dashboardMenuButton" type="button" class="menu-item">
+                        <i data-lucide="house"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button id="predictionMenuButton" type="button" class="menu-item">
+                        <i data-lucide="chart-line"></i>
+                        <span>Prediction</span>
+                    </button>
+                    <button id="assistantMenuButton" type="button" class="menu-item">
+                        <i data-lucide="bot"></i>
+                        <span>AI Assistant</span>
+                    </button>
+                    <button id="insightsMenuButton" type="button" class="menu-item">
+                        <i data-lucide="lightbulb"></i>
+                        <span>Insights</span>
+                    </button>
+                    <button id="chatHistoryMenuButton" type="button" class="menu-item">
+                        <i data-lucide="history"></i>
+                        <span>History</span>
+                    </button>
+                    <button id="trendsMenuButton" type="button" class="menu-item">
+                        <i data-lucide="chart-column"></i>
+                        <span>Trends</span>
+                    </button>
+                    <button id="profileMenuButton" type="button" class="menu-item">
+                        <i data-lucide="user-round"></i>
+                        <span>Profile</span>
+                    </button>
+                    <button id="settingsMenuButton" type="button" class="menu-item">
+                        <i data-lucide="settings"></i>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+
+                <section id="chatHistoryPanel" class="sidebar-subpanel card-base hidden-panel">
+                    <div class="subpanel-header">
+                        <h3>Chat Sessions</h3>
+                        <button id="newSessionButton" type="button" class="ghost-icon-btn">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    </div>
+                    <div id="chatSessionList" class="chat-session-list"></div>
+                </section>
+
+                <section id="settingsPanel" class="sidebar-subpanel card-base hidden-panel">
+                    <h3>Settings</h3>
+                    <div class="setting-row">
+                        <span>Theme</span>
+                        <button id="themeToggleSidebar" type="button" class="switch-btn">
+                            <i data-lucide="sun-medium"></i>
+                            <span id="themeToggleSidebarText">Light</span>
+                        </button>
+                    </div>
+                    <div class="setting-row">
+                        <span>Voice Assist</span>
+                        <label class="switch">
+                            <input id="voiceToggleSettings" type="checkbox">
+                            <span class="switch-track"></span>
+                        </label>
+                    </div>
+                    <div class="setting-row">
+                        <span>Session</span>
+                        <button id="logoutButton" type="button" class="switch-btn logout-btn">
+                            <i data-lucide="log-out"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <div class="bottom-section sidebar-bottom sidebar-help-wrap">
+                <section class="help-card card-base">
+                    <p class="help-title">Need Help?</p>
+                    <button id="editProfileButton" class="help-assistant-btn" type="button">
+                        <span class="help-icon-shell"><i data-lucide="message-circle-more"></i></span>
+                        <span>Ask AI Assistant</span>
+                    </button>
+                </section>
+            </div>
+        </aside>
+
+        <main class="main-content premium-dashboard">
+            <header class="dashboard-top card-base">
+                <div class="dashboard-title-wrap">
+                    <button id="sidebarToggleButton" type="button" class="icon-circle-btn" aria-label="Toggle sidebar">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div>
+                        <h2 id="dashboardTitle" class="dashboard-title">Sleep Health &amp; Stress Prediction</h2>
+                        <p id="dashboardSubtitle" class="dashboard-subtitle">AI-powered analysis of your sleep and stress signals.</p>
+                    </div>
+                </div>
+                <div class="dashboard-top-actions">
+                    <p id="dashboardDateBadge" class="dashboard-date">20 May 2025 • 10:45 AM</p>
+                    <button id="downloadReportButton" type="button" class="primary-action-btn small-action-btn">
+                        <i data-lucide="download"></i>
+                        Download Report
+                    </button>
+                    <button id="loginButton" type="button" class="auth-btn header-auth-btn">Login</button>
+                    <button id="signupButton" type="button" class="auth-btn signup-btn header-auth-btn">Signup</button>
+                    <button id="notificationButton" type="button" class="hidden-panel" aria-hidden="true">Notifications</button>
+                    <button id="themeToggleTop" type="button" class="hidden-panel" aria-hidden="true">Theme</button>
+                </div>
+            </header>
+
+            <section id="dashboardView" class="form-card card-base">
+                <div class="card-header">
+                    <h3><i data-lucide="layout-dashboard"></i>Health Input Form</h3>
+                    <div class="input-mode-toggle">
+                        <button id="manualInputButton" type="button" class="mode-btn active">Manual</button>
+                        <button id="autoFillButton" type="button" class="mode-btn">Auto Fill</button>
+                    </div>
+                </div>
+
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="user-round"></i>Age</span>
+                            <input type="number" name="age" min="1" value="24" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="moon"></i>Sleep Duration (hours)</span>
+                            <input type="number" name="sleep_duration" min="0" step="0.1" value="6.4" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="moon-star"></i>Sleep Quality (1-10)</span>
+                            <input type="number" name="sleep_quality" min="1" max="10" value="3" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="footprints"></i>Daily Steps</span>
+                            <input type="number" name="daily_steps" min="0" value="4100" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="dumbbell"></i>Activity (minutes)</span>
+                            <input type="number" name="activity" min="0" value="22" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="heart-pulse"></i>Resting HR</span>
+                            <input type="number" name="resting_hr" min="30" value="78" required>
+                        </label>
+                        <label class="field-group">
+                            <span class="field-label"><i data-lucide="brain"></i>Current Stress (1-10)</span>
+                            <input type="number" name="current_stress" min="1" max="10" value="7" required>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="predictButton" type="submit" class="primary-action-btn">
+                            <i data-lucide="sparkles"></i>
+                            Predict My Health
+                        </button>
+                        <button id="clearFormButton" type="button" class="secondary-action-btn">
+                            <i data-lucide="rotate-ccw"></i>
+                            Clear
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section id="predictionView" class="prediction-dashboard-grid hidden-panel" aria-hidden="true">
+                <section class="metric-card card-base">
+                    <div class="metric-head">
+                        <h3><i data-lucide="moon"></i>Sleep Score</h3>
+                    </div>
+                    <div class="metric-ring-wrap">
+                        <div id="scoreRing" class="score-ring" style="--ring-angle: 230deg;">
+                            <div class="score-inner">
+                                <span id="sleepScoreValue" class="score-value">64</span>
+                                <span class="score-divider">/100</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span id="sleepScoreTag" class="score-tag">Moderate</span>
+                    <p id="sleepScoreNote" class="metric-note">You had a decent sleep. There is room for improvement.</p>
+                </section>
+
+                <section class="metric-card stress-card card-base">
+                    <div class="metric-head">
+                        <h3><i data-lucide="heart-pulse"></i>Stress Level</h3>
+                    </div>
+                    <div class="metric-ring-wrap">
+                        <div class="stress-ring">
+                            <div class="stress-ring-inner">
+                                <span id="stressPill" class="stress-pill">HIGH</span>
+                                <i data-lucide="frown" class="stress-ring-face"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="stressLevelText" class="stress-level high">High</p>
+                    <p id="stressScale" class="metric-note">Your stress level is higher than normal. Take action to reduce stress.</p>
+                </section>
+
+                <section class="metric-card status-card card-base">
+                    <div class="metric-head">
+                        <h3><i data-lucide="shield-alert"></i>Overall Status</h3>
+                    </div>
+                    <div class="status-card-body">
+                        <div class="status-copy">
+                            <p id="overallStatusBadge" class="status-badge">RISKY DAY</p>
+                            <p id="overallStatusNote" class="metric-note">High stress despite moderate sleep indicates lifestyle imbalance.</p>
+                        </div>
+                        <div class="status-illustration" aria-hidden="true">
+                            <div class="status-orbit status-orbit-one"></div>
+                            <div class="status-orbit status-orbit-two"></div>
+                            <div class="status-orbit status-orbit-three"></div>
+                            <span class="status-chip status-chip-moon"><i data-lucide="moon-star"></i></span>
+                            <span class="status-chip status-chip-brain"><i data-lucide="brain"></i></span>
+                            <span class="status-chip status-chip-heart"><i data-lucide="activity"></i></span>
+                            <div class="status-figure"></div>
+                        </div>
+                    </div>
+                    <button id="viewResultButton" type="button" class="secondary-action-btn small-action-btn">View Result</button>
+                </section>
+
+                <section id="whatThisMeansSection" class="ai-insight-card card-base">
+                    <div class="insight-grid">
+                        <div class="insight-primary">
+                            <div class="insight-icon-shell"><i data-lucide="brain"></i></div>
+                            <div>
+                                <h3><span>AI Insight</span></h3>
+                                <p id="recommendationText"><strong>High stress despite moderate sleep indicates lifestyle imbalance.</strong> Your body is not getting enough recovery due to mental or physical overload.</p>
+                            </div>
+                        </div>
+                        <div class="insight-divider"></div>
+                        <div class="insight-secondary">
+                            <h4>What this means?</h4>
+                            <p id="meaningText">Your stress is affecting your overall well-being. Prioritize relaxation, physical activity &amp; better sleep habits.</p>
+                        </div>
+                        <button id="collapseInsightButton" type="button" class="insight-collapse-btn" aria-label="Collapse insight">
+                            <i data-lucide="chevron-up"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <section id="insightsSection" class="factors-card card-base">
+                    <h3><span>Key Factors Analysis</span> <button type="button" class="mini-help-btn"><i data-lucide="circle-help"></i></button></h3>
+                    <div class="factor-list">
+                        <div class="factor-item"><div class="factor-label-wrap"><i data-lucide="heart-pulse"></i><span>Heart Rate (Avg)</span></div><span class="factor-meta" id="factorHeartRateMeta">82 bpm</span><span id="factorHeartRateState" class="factor-state high">High</span><div class="factor-bar factor-bar-heart"><span id="factorHeartRateBar" style="width:82%"></span></div></div>
+                        <div class="factor-item"><div class="factor-label-wrap"><i data-lucide="moon-star"></i><span>Sleep Duration</span></div><span class="factor-meta" id="factorSleepDurationMeta">6h 12m</span><span id="factorSleepDurationState" class="factor-state moderate">Moderate</span><div class="factor-bar factor-bar-sleep"><span id="factorSleepDurationBar" style="width:58%"></span></div></div>
+                        <div class="factor-item"><div class="factor-label-wrap"><i data-lucide="footprints"></i><span>Physical Activity</span></div><span class="factor-meta" id="factorActivityMeta">2,850 steps</span><span id="factorActivityState" class="factor-state low">Low</span><div class="factor-bar factor-bar-activity"><span id="factorActivityBar" style="width:36%"></span></div></div>
+                        <div class="factor-item"><div class="factor-label-wrap"><i data-lucide="smartphone"></i><span>Screen Time (Before Sleep)</span></div><span class="factor-meta" id="factorStressMeta">2h 45m</span><span id="factorStressState" class="factor-state high">High</span><div class="factor-bar factor-bar-screen"><span id="factorStressBar" style="width:79%"></span></div></div>
+                        <div class="factor-item"><div class="factor-label-wrap"><i data-lucide="waves"></i><span>Breathing Quality</span></div><span class="factor-meta" id="factorSleepQualityMeta">Stable</span><span id="factorSleepQualityState" class="factor-state good">Good</span><div class="factor-bar factor-bar-breath"><span id="factorSleepQualityBar" style="width:68%"></span></div></div>
+                    </div>
+                </section>
+
+                <section class="breakdown-card card-base">
+                    <h3><span>Detailed Breakdown</span> <button type="button" class="mini-help-btn"><i data-lucide="circle-help"></i></button></h3>
+                    <ul class="breakdown-list">
+                        <li><div class="breakdown-label"><i data-lucide="clock-3"></i><span>Total Sleep Duration</span><em>Recommended: 7-8h</em></div><strong id="breakdownSleepDuration">6h 12m</strong></li>
+                        <li><div class="breakdown-label"><i data-lucide="moon"></i><span>Deep Sleep</span><em>Recommended: &gt;20%</em></div><strong id="breakdownDeepSleep">1h 48m (28%)</strong></li>
+                        <li><div class="breakdown-label"><i data-lucide="alarm-clock-check"></i><span>REM Sleep</span><em>Recommended: 20-30%</em></div><strong id="breakdownStressScale">1h 36m (25%)</strong></li>
+                        <li><div class="breakdown-label"><i data-lucide="badge-percent"></i><span>Sleep Efficiency</span><em>Recommended: &gt;85%</em></div><strong id="breakdownEfficiency">78%</strong></li>
+                    </ul>
+                </section>
+
+                <section class="recommendations-card card-base">
+                    <h3><span>Personalized Recommendations</span> <button type="button" class="mini-help-btn"><i data-lucide="circle-help"></i></button></h3>
+                    <ul id="recommendationsList">
+                        <li><i data-lucide="person-standing"></i>Practice 10 min meditation to reduce stress</li>
+                        <li><i data-lucide="smartphone"></i>Reduce screen time by 30% before sleep</li>
+                        <li><i data-lucide="person-standing"></i>Take a 20-30 min walk daily in morning/evening</li>
+                        <li><i data-lucide="bed-single"></i>Sleep before 11:00 PM for better recovery</li>
+                        <li><i data-lucide="cup-soda"></i>Stay hydrated and avoid caffeine at night</li>
+                    </ul>
+                </section>
+
+                <section class="trend-card card-base" id="trendSection">
+                    <div class="card-header trend-header">
+                        <h3>7-Day Trend</h3>
+                        <button id="clearHistoryButton" type="button" class="secondary-action-btn small-action-btn">
+                            <i data-lucide="trash-2"></i>
+                            Clear History
+                        </button>
+                    </div>
+                    <div class="chart-wrap">
+                        <canvas id="healthChart"></canvas>
+                    </div>
+                    <p id="historyState" class="chart-footnote">Trend reflects your recent sleep and stress pattern movement.</p>
+                </section>
+
+                <section class="outlook-card card-base">
+                    <h3>Next Day Outlook</h3>
+                    <div class="outlook-card-body">
+                        <div class="outlook-copy">
+                            <div class="outlook-copy-top">
+                                <i data-lucide="cloud-sun"></i>
+                                <p id="outlookMessage" class="metric-note">If you follow the suggested recommendations, your stress may improve by 25-35% and sleep quality by 15-20%.</p>
+                            </div>
+                            <button id="openChatButton" type="button" class="outlook-cta">
+                                Better Day Ahead!
+                            </button>
+                        </div>
+                        <div class="outlook-gauge">
+                            <div class="outlook-gauge-inner">
+                                <span>Improvement</span>
+                                <strong id="outlookValue">25-35%</strong>
+                                <span>Possible</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <section id="profilePanel" class="floating-panel hidden-panel" aria-hidden="true">
+        <div class="floating-header">
+            <h3>Edit Profile</h3>
+            <button id="closeProfilePanelButton" type="button" class="icon-circle-btn mini-btn" aria-label="Close profile panel">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <form id="profileForm" class="floating-form">
+            <label>
+                Name
+                <input id="profileNameInput" type="text" required>
+            </label>
+            <label>
+                Email
+                <input id="profileEmailInput" type="email" required>
+            </label>
+            <label>
+                Age (optional)
+                <input id="profileAgeInput" type="number" min="1" placeholder="Age">
+            </label>
+            <label>
+                Gender (optional)
+                <select id="profileGenderInput">
+                    <option value="">Select gender</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </label>
+            <label>
+                Sleep Goal (optional)
+                <input id="profileSleepGoalInput" type="text" placeholder="e.g. 8 hours nightly">
+            </label>
+            <div class="floating-actions">
+                <button id="saveProfileButton" type="submit" class="primary-action-btn">Save</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="authModal" class="auth-modal hidden-panel" aria-hidden="true">
+        <div class="auth-card">
+            <div class="floating-header">
+                <h3 id="authTitle">Login</h3>
+                <button id="closeAuthModalButton" type="button" class="icon-circle-btn mini-btn" aria-label="Close authentication panel">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="authForm" class="floating-form">
+                <label>
+                    Name
+                    <input id="authNameInput" name="name" type="text" required autocomplete="name">
+                </label>
+                <label>
+                    Email
+                    <input id="authEmailInput" name="email" type="email" required autocomplete="email">
+                </label>
+                <label>
+                                 Password
+    <input id="authPasswordInput" name="password" type="password" required autocomplete="current-password">
+</label>
+                <div class="floating-actions">
+                    <button id="authSubmitButton" type="submit" class="primary-action-btn">Continue</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section id="resultModal" class="auth-modal hidden-panel" aria-hidden="true">
+        <div class="auth-card">
+            <div class="floating-header">
+                <h3>
+                    <i data-lucide="activity"></i>
+                    Prediction Result
+                </h3>
+                <button id="closeResultModalButton" type="button" class="icon-circle-btn mini-btn" aria-label="Close result panel">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="result-modal-content">
+                <p><strong>Sleep Score:</strong> <span id="resultModalSleepScore">72</span></p>
+                <p><strong>Stress Level:</strong> <span id="resultModalStressLevel">Moderate</span> (<span id="resultModalStressScale">6 / 10</span>)</p>
+                <p id="resultModalRecommendation">Your sleep quality is good, but stress seems to be moderate. Try meditation and limiting screen time before bed for better rest.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="chatModal" class="auth-modal hidden-panel" aria-hidden="true">
+        <div class="auth-card chat-modal-card">
+            <div class="floating-header">
+                <h3>
+                    <i data-lucide="message-circle"></i>
+                    AI Assistant
+                </h3>
+                <button id="closeChatModalButton" type="button" class="icon-circle-btn mini-btn" aria-label="Close chat panel">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="chat-card chat-modal-body">
+                <div class="chat-top">
+                    <div>
+                        <p>Your personal sleep &amp; wellness assistant</p>
+                    </div>
+                    <span class="online-badge">Online</span>
+                </div>
+                <div class="chat-actions">
+                    <button id="pinChatButton" type="button" class="icon-chat-btn" aria-label="Pin chat" title="Pin chat">
+                        <i data-lucide="pin"></i>
+                    </button>
+                    <button id="renameChatButton" type="button" class="icon-chat-btn" aria-label="Rename chat" title="Rename chat">
+                        <i data-lucide="text-cursor-input"></i>
+                    </button>
+                    <button id="deleteChatButton" type="button" class="icon-chat-btn" aria-label="Delete chat" title="Delete chat">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+                <div id="chatMessages" class="chat-messages"></div>
+                <form id="chatForm" class="chat-input-row">
+                    <input id="chatInput" type="text" placeholder="Ask anything..." required autocomplete="off">
+                    <button type="submit" class="send-btn" aria-label="Send message">
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <button id="floatingChatButton" type="button" class="floating-chat-btn" aria-label="Open AI Assistant">
+        <i data-lucide="message-circle"></i>
+    </button>
+
+    <script src="{{ url_for('static', filename='app.js', v=3) }}"></script>
+    <script>
+      lucide.createIcons();
+    </script>
+</body>
+</html>
