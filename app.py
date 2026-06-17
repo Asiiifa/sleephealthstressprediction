@@ -152,6 +152,7 @@ def signup():
     except Exception as exc:
         print(f"SIGNUP ERROR: {repr(exc)}", flush=True)
         debug_log(f"Signup failed: {exc}")
+        return jsonify({"ok": False, "error": str(exc)}), 500
         return jsonify({"ok": False, "error": "Something went wrong"}), 500
 
 
