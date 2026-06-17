@@ -1,4 +1,4 @@
-﻿import os
+import os
 from pathlib import Path
 import threading
 import webbrowser
@@ -226,7 +226,8 @@ def predict():
         try:
             rag_query = f"My sleep score is {round(sleep_value)}, stress level is {level}, sleep duration is {sleep_duration} hours, sleep quality is {sleep_quality}/10, daily steps are {daily_steps}, activity is {activity} minutes, resting heart rate is {resting_hr} bpm. Give me personalized advice."
             advice = get_rag_response(rag_query)
-        except Exception:
+        except Exception as e:
+            print(f"RAG ERROR PREDICT: {repr(e)}", flush=True)
             advice = f"{level} stress detected. Monitor your sleep and activity levels."
 
         if session.get("user_id") and supabase is not None:
@@ -261,6 +262,7 @@ def chat():
     try:
         reply = get_rag_response(msg)
     except Exception as e:
+        print(f"RAG ERROR CHAT: {repr(e)}", flush=True)
         reply = "I am having trouble. Please try again."
     return jsonify({"reply": reply})
 
