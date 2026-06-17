@@ -150,6 +150,7 @@ def signup():
             return jsonify({"ok": True})
         return jsonify({"ok": False, "error": "Signup failed"}), 400
     except Exception as exc:
+        print(f"SIGNUP ERROR: {repr(exc)}", flush=True)
         debug_log(f"Signup failed: {exc}")
         return jsonify({"ok": False, "error": "Something went wrong"}), 500
 
