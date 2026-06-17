@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY"), timeout=30.0)
 
 KB_PATH = os.path.join(os.path.dirname(__file__), "knowledge_base.txt")
 
@@ -50,4 +50,5 @@ Respond in 2-3 sentences only. Be direct and friendly. No bullet points."""
         max_tokens=150
     )
     return response.choices[0].message.content
+
 
