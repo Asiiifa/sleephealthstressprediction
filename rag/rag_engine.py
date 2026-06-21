@@ -44,11 +44,19 @@ User Question: {user_query}
 
 Respond in 2-3 sentences only. Be direct and friendly. No bullet points."""
 
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=150
-    )
-    return response.choices[0].message.content
+    import time
+    last_error = None
+    for attempt in range(3):
+        try:
+            response = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=150
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            last_error = e
+            time.sleep(1)
+    raise last_error
 
 
