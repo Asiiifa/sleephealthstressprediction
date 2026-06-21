@@ -53,7 +53,8 @@ Respond in 2-3 sentences only. Be direct and friendly. No bullet points."""
             response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=150
+                max_tokens=100,
+                stream=False
             )
             return response.choices[0].message.content
         except Exception as e:
