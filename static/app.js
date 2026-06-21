@@ -1987,16 +1987,19 @@
       body: JSON.stringify(payload)
     })
       .then(function (response) {
-        if (!response.ok) {
-          throw new Error("Authentication failed");
-        }
-        return response.json();
+        return response.json().then(function (data) {
+          if (!response.ok) {
+            console.error("AUTH ERROR DETAILS:", data);
+            throw new Error(data.error || "Authentication failed");
+          }
+          return data;
+        });
       })
       .then(function () {
         window.location.reload();
       })
-      .catch(function () {
-        window.alert("Authentication failed. Please check your details and try again.");
+      .catch(function (err) {
+        window.alert("Error: " + err.message);
       });
   }
 
