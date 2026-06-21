@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"), timeout=60.0, max_retries=3)
+import httpx
+http_client = httpx.Client()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"), http_client=http_client)
 
 KB_PATH = os.path.join(os.path.dirname(__file__), "knowledge_base.txt")
 
