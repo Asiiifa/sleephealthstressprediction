@@ -265,7 +265,7 @@ def chat():
         reply = get_rag_response(msg)
     except Exception as e:
         print(f"RAG ERROR CHAT: {repr(e)}", flush=True)
-        reply = "I am having trouble. Please try again."
+        reply = f"DEBUG ERROR: {repr(e)}"
     return jsonify({"reply": reply})
 
 # ================= HISTORY =================
