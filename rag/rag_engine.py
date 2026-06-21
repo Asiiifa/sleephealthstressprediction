@@ -3,10 +3,7 @@ from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
-
-import httpx
-http_client = httpx.Client()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"), http_client=http_client)
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 KB_PATH = os.path.join(os.path.dirname(__file__), "knowledge_base.txt")
 
@@ -29,37 +26,19 @@ def get_relevant_chunks(query, knowledge_base, top_k=3):
 def get_rag_response(user_query):
     knowledge_base = load_knowledge_base()
     relevant_chunks = get_relevant_chunks(user_query, knowledge_base)
-
-    if not relevant_chunks:
-        context = "No specific information found in knowledge base."
-    else:
-        context = "\n\n".join(relevant_chunks)
+    context = "\n\n".join(relevant_chunks) if relevant_chunks else "No specific information found."
 
     prompt = f"""You are Nidra AI, a sleep health and stress management assistant.
-Use the following context from the knowledge base to answer the user's question.
-If the context does not fully answer the question, use your general knowledge but stay focused on sleep and stress topics.
+Use this context to answer in 2-3 sentences only, friendly tone, no bullet points.
 
 Context:
 {context}
 
-User Question: {user_query}
+User Question: {user_query}"""
 
-Respond in 2-3 sentences only. Be direct and friendly. No bullet points."""
-
-    import time
-    last_error = None
-    for attempt in range(3):
-        try:
-            response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=100,
-                stream=False
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            last_error = e
-            time.sleep(1)
-    raise last_error
-
-
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150
+    )
+    return response.choices[0].message.content
