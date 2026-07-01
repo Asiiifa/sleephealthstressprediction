@@ -139,11 +139,14 @@ def signup():
         res = supabase.auth.sign_up({"email": email, "password": password})
         user = res.user
         if user:
-            supabase.table("profiles").insert({
-                "id": user.id,
-                "name": name,
-                "email": email
-            }).execute()
+            try:
+                supabase.table("profiles").insert({
+                    "id": user.id,
+                    "name": name,
+                    "email": email
+                }).execute()
+            except Exception:
+                pass
             session["user_id"] = user.id
             session["user_name"] = name
             session["user_email"] = email
