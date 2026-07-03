@@ -42,6 +42,9 @@ secret = os.getenv("SECRET_KEY") or "dev-secret-key"
 if not os.getenv("SECRET_KEY"):
     debug_log("SECRET_KEY not found. Using development fallback secret.")
 app.secret_key = secret
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
