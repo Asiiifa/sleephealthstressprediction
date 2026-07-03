@@ -45,6 +45,10 @@ app.secret_key = secret
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_NAME"] = "nidra_session"
+app.config["SESSION_COOKIE_DOMAIN"] = None
+from datetime import timedelta
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
@@ -180,6 +184,7 @@ def login():
         if user:
             profile = supabase.table("profiles").select("name").eq("id", user.id).execute()
             name = profile.data[0]["name"] if profile.data else email
+            session.permanent = True
             session["user_id"] = user.id
             session["user_name"] = name
             session["user_email"] = email
