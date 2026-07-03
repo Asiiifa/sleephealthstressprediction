@@ -211,6 +211,16 @@
     renderActiveChat();
     hydrateProfileEditor();
     startLoadingFlow();
+    var storedEmail = localStorage.getItem("nidra_user_email");
+    var storedName = localStorage.getItem("nidra_user_name");
+    if (storedEmail && refs.body) {
+      refs.body.dataset.userName = storedName || storedEmail;
+      refs.body.dataset.userEmail = storedEmail;
+      if (refs.sidebarUserName) refs.sidebarUserName.textContent = storedName || storedEmail;
+      if (refs.sidebarUserEmail) refs.sidebarUserEmail.textContent = storedEmail;
+      if (refs.loginButton) refs.loginButton.style.display = "none";
+      if (refs.signupButton) refs.signupButton.style.display = "none";
+    }
     initializeIcons();
   }
 
